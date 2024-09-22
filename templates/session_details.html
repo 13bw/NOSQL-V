@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes da Sessão</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1 id="session-title">{{ title }}</h1>
+        <form id="vote-form">
+            <div id="questions-container"></div>
+            
+            <button type="submit">Enviar Votos</button>
+        </form>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", async function() {
+            const questionsContainer = document.getElementById('questions-container');
+
+            // Recupera as perguntas formatadas do backend e popula o formulário
+            const quests = JSON.parse('{{ quests | tojson | safe }}');
+            quests.forEach(quest => {
+                const questionDiv = document.createElement('div');
+                questionDiv.classList.add('question');
+                
+                const questionTitle = document.createElement('h3');
+                questionTitle.textContent = quest.pergunta;
+                questionDiv.appendChild(questionTitle);
+
+                const optionsList = document.createElement('ul');
+                optionsList.classList.add('options');
+
+                quest.opcoes.forEach(option => {
+                    const optionItem = document.createElement('li');
+                    
+                    const optionInput = document.createElement('input');
+                    optionInput.type = 'radio';
+                    optionInput.name = `quest_${quest.id}`;
+                    optionInput.value = option;
+                    optionInput.id = `quest_${quest.id}_option_${option}`;
+                    
+                    const optionLabel = document.createElement('label');
+                    optionLabel.htmlFor = `quest_${quest.id}_option_${option}`;
+                    optionLabel.textContent = option;
+
+                    optionItem.appendChild(optionInput);
+                    optionItem.appendChild(optionLabel);
+                    optionsList.appendChild(optionItem);
+                });
+
+                questionDiv.appendChild(optionsList);
+                questionsContainer.appendChild(questionDiv);
+            });
+
+            // Envia os votos para o backend
+            document.getElementById('vote-form').addEventListener('submit', async function(event) {
+                event.preventDefault();
+
+                const votes = {};
+                const formData = new FormData(this);
+                formData.forEach((value, key) => {
+                    const questId = key.split('_')[1];
+                    if (!votes[questId]) {
+                        votes[questId] = [];
+                    }
+                    votes[questId].push(value);
+                });
+
+                try {
+                    const response = await fetch('/vote', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'user_role': 'user'  // Simulando que o usuário não é admin
+                        },
+                        body: JSON.stringify({
+                            session_id: '{{ session_id }}',
+                            votes: votes
+                        })
+                    });
+                    const data = await response.json();
+                    alert(data.message);
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

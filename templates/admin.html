@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Votação - Admin</title>
+    <link rel="stylesheet" href="./static/styles.css">
+</head>
+<body>
+
+    <!-- Formulário para iniciar a votação -->
+    <div id="admin-section" class="container">
+        <h1>Sistema de Votação - Admin</h1>
+
+        <h2>Iniciar Sessão de Votação</h2>
+        <form id="create-voting-form">
+            <label for="title">Título da Votação:</label>
+            <input type="text" id="title" name="title" required>
+
+            <h3>Questões</h3>
+            <div id="quests-container">
+                <div class="quest">
+                    <label for="pergunta">Pergunta 1:</label>
+                    <input type="text" name="pergunta" required>
+                    <label for="opcoes">Opções (separadas por vírgula):</label>
+                    <input type="text" name="opcoes" required>
+                </div>
+            </div>
+            <button type="button" id="add-quest-btn">Adicionar Questão</button>
+            <button type="submit">Iniciar Votação</button>
+        </form>
+        <div id="create-session-result"></div>
+
+
+        <!-- Formulário para listar todas as sessões -->
+        <h2>Listar Sessões</h2>
+        <button id="list-sessions-btn">Listar Sessões</button>
+        <div id="sessions-list"></div>
+    </div>
+    <script src="./static/admin_script.js"></script>
+</body>
+</html>
